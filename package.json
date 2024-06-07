@@ -2,14 +2,18 @@
   "name": "crud-api",
   "version": "1.0.0",
   "description": "A simple node-js REST APi with nodejs and Mysql",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "start": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Afeez Azeez",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.10.0",
+    "nodemon": "^3.1.3",
     "sequelize": "^6.37.3",
     "sequelize-cli": "^6.6.2"
   }

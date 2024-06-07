@@ -2,12 +2,8 @@ const express = require('express');
 
 const app = express();
 
-app.get('/', (req,res)=>{
-    res.send("Node app is working!");
-});
+const  postRoute = require('./routes/posts');
 
-app.get('/blog', (req,res)=>{
-    res.send("Hello blog!");
-});
+app.use("/posts",postRoute);
 
 module.exports = app;
