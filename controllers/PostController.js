@@ -1,128 +1,127 @@
 const Validator = require('fastest-validator');
-const models =  require('../models');
-const { sendSuccessResponse, sendErrorResponse } = require('../utils/responseHelper');
+const models = require('../models');
+const { sendSuccessResponse } = require('../utils/responseHelper');
+const ClientErrorException  = require('../exceptions/ClientErrorException')
+const ValidationErrorException  = require('../exceptions/ValidationException')
+const { validate } = require('../utils/validationHelper');
 
 
-function store(req,res){
-   
-    const post = {
-       title:req.body.title,
-       content:req.body.content,
-       imageUrl:req.body.imageUrl,
-       categoryId:req.body.categoryId,
-       userId:req.body.userId
+async function store(req, res,next) {
+    const requestData = {
+        title: req.body.title,
+        content: req.body.content,
+        imageUrl: req.body.imageUrl,
+        categoryId: req.body.categoryId,
+        userId: req.body.userId
+    };
+
+    const schema = {
+        title: { type: "string", optional: false, max: "100" },
+        content: { type: "string", optional: false, max: "500" },
+        categoryId: { type: "number", optional: false }
+    };
+
+    const { isValid, errors } = validate(requestData, schema);
+
+    if (!isValid) {
+        return next(new ValidationErrorException(errors));
     }
 
-   const schema = {
-       title:{type:"string",optional:false,max:"100"},
-       content:{type:"string",optional:false,max:"500"},
-       categoryId:{type:"number",optional:false},
+    try {
+        const result = await models.Post.create(requestData);
+        return sendSuccessResponse(res, result, "Post created", 201);
+    } catch (error) {
+        return next(new ClientErrorException("Failed to create post"));
     }
-
-    const v =  new Validator();
-    const validatorResponse = v.validate(post,schema);
-
-    if(validatorResponse !== true){
-        return sendErrorResponse(res,validatorResponse,validatorResponse[0].message,422);
-    }
-
-   models.Post.create(post)
-            .then(result=>{
-                sendSuccessResponse(res, result, "Post created", 201);
-            }).catch(error=>{
-                sendErrorResponse(res, error, "Failed to create post");
-            });
 }
 
-function show(req,res){
-    const id =  req.params.id
-    models.Post.findByPk(id).then(result=>{
-        if(result){
-            sendSuccessResponse(res, result);
-        }else{
-            sendErrorResponse(res,null,"Post not found",404)
+async function show(req, res,next) {
+    const id = req.params.id;
+
+    try {
+        const result = await models.Post.findByPk(id);
+        if (result) {
+            return sendSuccessResponse(res, result);
+        } else {
+            return next(new ClientErrorException("Post not found", 404));
         }
-    }).catch(error=>{
-        sendErrorResponse(res, error, "Failed to fetch post");
-    });
-}
-
-function index(req,res){
-    models.Post.findAll().then(result=>{
-        sendSuccessResponse(res, result);
-    }).catch(error=>{
-        sendErrorResponse(res, error, "Failed to fetch all post");
-    });
-}
-
-function update(req,res){
-    const id =  req.params.id
-    const updatedPost = {
-       title:req.body.title,
-       content:req.body.content,
-       imageUrl:req.body.imageUrl,
-       categoryId:req.body.categoryId,
+    } catch (error) {
+        return next(new ClientErrorException("Failed to fetch post"));
     }
+}
+
+async function index(req, res,next) {
+    try {
+        const result = await models.Post.findAll();
+        return sendSuccessResponse(res, result);
+    } catch (error) {
+        return next(new ClientErrorException("Failed to fetch all posts"));  
+    }
+}
+
+async function update(req, res,next) {
+    
+    const id = req.params.id;
+   
+    const requestData = {
+        title: req.body.title,
+        content: req.body.content,
+        imageUrl: req.body.imageUrl,
+        categoryId: req.body.categoryId,
+    };
+
     const userId = 1;
 
     const schema = {
-        title:{type:"string",optional:false,max:"100"},
-        content:{type:"string",optional:false,max:"500"},
-        categoryId:{type:"number",optional:false},
-     }
- 
-     const v =  new Validator();
-     const validatorResponse = v.validate(updatedPost,schema);
- 
-     if(validatorResponse !== true){
-         return sendErrorResponse(res,validatorResponse,validatorResponse[0].message,422);
-     }
-   
-    models.Post.findOne({ where: { id: id, userId: userId } })
-        .then(post => {
-            if (!post) {
-                return sendErrorResponse(res, null, "Post not found", 404);
-            }
-            models.Post.update(updatedPost, { where: { id: id, userId: userId } })
-                .then(result => {
-                    sendSuccessResponse(res, updatedPost, "Post updated!");
-                })
-                .catch(error => {
-                    sendErrorResponse(res, error, "Failed to update post");
-                });
-        })
-        .catch(error => {
-            sendErrorResponse(res, error, "Error finding post",404);
-        });
+        title: { type: "string", optional: false, max: "100" },
+        content: { type: "string", optional: false, max: "500" },
+        categoryId: { type: "number", optional: false }
+    };
+
+    const { isValid, errors } = validate(requestData, schema);
+
+    if (!isValid) {
+        return next(new ValidationErrorException(errors));
+    }
+
+    try {
+
+        const post = await models.Post.findOne({ where: { id: id, userId: userId } });
+       
+        if (!post) {
+            return next(new ClientErrorException( "Post not found", 404));
+        }
+
+        await models.Post.update(requestData, { where: { id: id, userId: userId } });
+        
+        return sendSuccessResponse(res, requestData, "Post updated!");
+
+    } catch (error) {
+        return next(new ClientErrorException("Failed to update post"));
+    }
 }
 
-function destroy(req,res){
-    const id =  req.params.id
+async function destroy(req, res,next) {
+    const id = req.params.id;
     const userId = 1;
 
-    models.Post.findOne({ where: { id: id, userId: userId } })
-        .then(post => {
-            if (!post) {
-                return sendErrorResponse(res, null, "Post not found", 404);
-            }
+    try {
+        const post = await models.Post.findOne({ where: { id: id, userId: userId } });
+        if (!post) {
+            return next(new ClientErrorException( "Post not found", 404));
+        }
 
-          models.Post.destroy({ where: { id: id, userId: userId } })
-                .then(result => {
-                    sendSuccessResponse(res, null, "Post deleted");
-                })
-                .catch(error => {
-                    sendErrorResponse(res, error, "Failed to delete post");
-                });
-        })
-        .catch(error => {
-            sendErrorResponse(res, error, "Error finding post",404);
-        });
+        await models.Post.destroy({ where: { id: id, userId: userId } });
+        return sendSuccessResponse(res, null, "Post deleted");
+    } catch (error) {
+        return next(new ClientErrorException("Failed to delete post"));
+    }
 }
 
 module.exports = {
-    store:store,
-    show:show,
-    index:index,
-    update:update,
-    destroy:destroy
-}
+    store,
+    show,
+    index,
+    update,
+    destroy
+};

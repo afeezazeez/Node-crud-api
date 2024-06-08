@@ -7,8 +7,10 @@ function sendSuccessResponse(res, data = null, message = null, statusCode = 200)
         response.message = message;
     }
 
-    response.data = data;
-   
+    if (data) {
+        response.data = data;
+    }
+
     res.status(statusCode).json(response);
 }
 
@@ -22,7 +24,7 @@ function sendErrorResponse(res, error = null, message = null, statusCode = 500) 
     }
 
     if (error) {
-        response.error = error;
+        response.errors = error;
     }
 
     res.status(statusCode).json(response);
