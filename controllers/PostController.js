@@ -21,7 +21,11 @@ function store(req,res){
 function show(req,res){
     const id =  req.params.id
     models.Post.findByPk(id).then(result=>{
-        sendSuccessResponse(res, result);
+        if(result){
+            sendSuccessResponse(res, result);
+        }else{
+            sendErrorResponse(res,null,"Post not found",404)
+        }
     }).catch(error=>{
         sendErrorResponse(res, error, "Failed to fetch post");
     });
@@ -45,22 +49,45 @@ function update(req,res){
     }
     const userId = 1;
    
-    models.Post.update(updatedPost,{where:{id:id,userId:userId}}).then(result=>{
-        sendSuccessResponse(res, updatedPost,"Post updated!");
-    }).catch(error=>{
-        sendErrorResponse(res, error, "Failed to update post");
-    });
+    models.Post.findOne({ where: { id: id, userId: userId } })
+        .then(post => {
+            if (!post) {
+                return sendErrorResponse(res, null, "Post not found", 404);
+            }
+            models.Post.update(updatedPost, { where: { id: id, userId: userId } })
+                .then(result => {
+                    sendSuccessResponse(res, updatedPost, "Post updated!");
+                })
+                .catch(error => {
+                    sendErrorResponse(res, error, "Failed to update post");
+                });
+        })
+        .catch(error => {
+            sendErrorResponse(res, error, "Error finding post",404);
+        });
 }
 
 function destroy(req,res){
     const id =  req.params.id
     const userId = 1;
 
-    models.Post.destroy({where:{id:id,userId:userId}}).then(result=>{
-        sendSuccessResponse(res);
-    }).catch(error=>{
-        sendErrorResponse(res, error, "Failed to delete post");
-    });
+    models.Post.findOne({ where: { id: id, userId: userId } })
+        .then(post => {
+            if (!post) {
+                return sendErrorResponse(res, null, "Post not found", 404);
+            }
+
+          models.Post.destroy({ where: { id: id, userId: userId } })
+                .then(result => {
+                    sendSuccessResponse(res, null, "Post deleted");
+                })
+                .catch(error => {
+                    sendErrorResponse(res, error, "Failed to delete post");
+                });
+        })
+        .catch(error => {
+            sendErrorResponse(res, error, "Error finding post",404);
+        });
 }
 
 module.exports = {
