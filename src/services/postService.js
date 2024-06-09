@@ -15,13 +15,41 @@ async function getPostById(id) {
     return post;
 }
 
-async function getAllPosts() {
-    return models.Post.findAll({
+async function getAllPosts(query, pageSize, page) {
+   
+    const offset = (page - 1) * pageSize;
+
+    const whereClause = query
+        ? {
+              [Op.or]: [
+                  { title: { [Op.like]: `%${query}%` } },
+                  { content: { [Op.like]: `%${query}%` } }
+              ]
+          }
+        : {};
+
+    const { count, rows } = await models.Post.findAndCountAll({
+        where: whereClause,
         order: [
             ['createdAt', 'DESC']
-        ]
+        ],
+        limit: pageSize,
+        offset: offset
     });
+
+    const totalPages = Math.ceil(count / pageSize);
+
+    return {
+        meta: {
+            totalItems: count,
+            totalPages: totalPages,
+            currentPage: page,
+            pageSize: pageSize
+        },
+        data: rows
+    };
 }
+
 
 
 async function updatePost(id, updatedData) {

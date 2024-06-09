@@ -40,7 +40,11 @@ async function show(req, res, next) {
 
 async function index(req, res, next) {
     try {
-        const result = await postService.getAllPosts();
+        const query = req.query.q;
+        const pageSize = parseInt(process.env.PAGE_SIZE) || 5;
+        const page = parseInt(req.query.page) || 1;
+
+        const result = await postService.getAllPosts(query, pageSize, page);
         return sendSuccessResponse(res, result);
     } catch (error) {
         return next(error);
