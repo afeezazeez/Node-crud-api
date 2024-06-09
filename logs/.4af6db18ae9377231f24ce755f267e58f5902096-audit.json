@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/chillingloccini/Desktop/NodeJs-Projects/Backend/crud-api/logs/.4af6db18ae9377231f24ce755f267e58f5902096-audit.json",
+    "files": [
+        {
+            "date": 1717969318125,
+            "name": "/Users/chillingloccini/Desktop/NodeJs-Projects/Backend/crud-api/logs/application-2024-06-09.log",
+            "hash": "c24dbf5b37c268a39e9f5697aabd41ce7af38fc30c0fb058fb3e7bb9bba361b7"
+        }
+    ],
+    "hashType": "sha256"
+}

@@ -1,5 +1,6 @@
 const models = require('../models');
 const ClientErrorException = require('../exceptions/ClientErrorException');
+const { Op } = require('sequelize');
 
 async function createPost(postData) {
     return models.Post.create(postData);
@@ -15,8 +16,13 @@ async function getPostById(id) {
 }
 
 async function getAllPosts() {
-    return models.Post.findAll();
+    return models.Post.findAll({
+        order: [
+            ['createdAt', 'DESC']
+        ]
+    });
 }
+
 
 async function updatePost(id, updatedData) {
   

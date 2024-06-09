@@ -10,6 +10,11 @@ function authenticate(req, res, next) {
                 return next(new AuthenticationException());
             }
             const decodedToken = verifyToken(token);
+            
+            if(!decodedToken) {
+                next(new AuthenticationException());
+            }
+
             req.userData = decodedToken;
             next();
         });

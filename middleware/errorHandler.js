@@ -2,6 +2,7 @@ const { sendErrorResponse } = require('../utils/responseHelper');
 const ClientErrorException = require('../exceptions/ClientErrorException'); 
 const ValidationErrorException = require('../exceptions/ValidationException'); 
 const AuthenticationException = require('../exceptions/AuthenticationException'); 
+const logger = require('../utils/logger');
 
 
 function errorHandler(err, req, res, next) {
@@ -17,9 +18,9 @@ function errorHandler(err, req, res, next) {
         return sendErrorResponse(res, null, err.message, err.statusCode);
     }
 
+    logger.error(err);
 
-    
-    return sendErrorResponse(res, err, 'Internal Server Error', 500);
+    return sendErrorResponse(res, null, 'Internal Server Error', 500);
 }
 
 module.exports = errorHandler;
