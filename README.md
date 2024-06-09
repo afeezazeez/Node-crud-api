@@ -17,11 +17,11 @@ To run this application locally, follow these steps:
 
 ### Authentication
 
-- **Register**: `POST /auth/register`
+- **Register**: `POST /user/register`
   - Registers a new user.
   - Requires a JSON object containing `name`, `email`, and `password` in the request body.
 
-- **Login**: `POST /auth/login`
+- **Login**: `POST /user/login`
   - Logs in an existing user.
   - Requires a JSON object containing `email` and `password` in the request body.
 
@@ -40,7 +40,7 @@ To run this application locally, follow these steps:
   - Retrieves a single post by ID.
   - Requires authentication (JWT token) in the request header.
 
-- **Update Post**: `PUT /posts/:id`
+- **Update Post**: `PATCH /posts/:id`
   - Updates an existing post by ID.
   - Requires authentication (JWT token) in the request header.
   - Requires a JSON object containing `title`, `content`, `imageUrl`, and `categoryId` in the request body.
@@ -59,7 +59,7 @@ To run this application locally, follow these steps:
 
 ## Contributors
 
-- [Your Name](https://github.com/yourusername)
+- [Afeez Azeez](https://github.com/azeezafeez)
 
 ## License
 
