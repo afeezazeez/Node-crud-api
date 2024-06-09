@@ -1,12 +1,19 @@
 const models = require('../models');
 const ClientErrorException = require('../exceptions/ClientErrorException');
 const ValidationErrorException = require('../exceptions/ValidationException');
+const { validate } = require('../utils/validationHelper');
 
 async function createPost(postData) {
+    
     return models.Post.create(postData);
 }
 
 async function getPostById(id) {
+    const post = await models.Post.findOne({ where: { id: id} });
+    
+    if (!post) {
+        throw new ClientErrorException("Post not found", 404);
+    }
     return models.Post.findByPk(id);
 }
 
