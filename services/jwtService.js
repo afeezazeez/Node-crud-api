@@ -52,17 +52,6 @@ function isTokenBlacklisted(token, callback) {
     });
 }
 
-function isTokenBlacklisted(token, callback) {
-    redisClient.get(token)
-        .then((result) => {
-            callback(null, result === 'true');
-        })
-        .catch((err) => {
-            console.error('Error checking blacklist:', err);
-            callback(err, false);
-        });
-}
-
 
 module.exports = {
     generateToken,
