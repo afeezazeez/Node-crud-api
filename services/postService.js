@@ -1,10 +1,7 @@
 const models = require('../models');
 const ClientErrorException = require('../exceptions/ClientErrorException');
-const ValidationErrorException = require('../exceptions/ValidationException');
-const { validate } = require('../utils/validationHelper');
 
 async function createPost(postData) {
-    
     return models.Post.create(postData);
 }
 
@@ -14,32 +11,35 @@ async function getPostById(id) {
     if (!post) {
         throw new ClientErrorException("Post not found", 404);
     }
-    return models.Post.findByPk(id);
+    return post;
 }
 
 async function getAllPosts() {
     return models.Post.findAll();
 }
 
-async function updatePost(id, userId, updatedData) {
+async function updatePost(id, updatedData) {
   
-    const post = await models.Post.findOne({ where: { id: id, userId: userId } });
+    const post = await models.Post.findOne({ where: { id: id} });
     
     if (!post) {
         throw new ClientErrorException("Post not found", 404);
     }
     
-    models.Post.update(updatedData, { where: { id: id, userId: userId } });
+    await post.update(updatedData);
 
-    return updatedData;
+    return post;
 }
 
-async function deletePost(id, userId) {
-    const post = await models.Post.findOne({ where: { id: id, userId: userId } });
+async function deletePost(id) {
+    const post = await models.Post.findOne({ where: { id: id} });
     if (!post) {
         throw new ClientErrorException("Post not found", 404);
     }
-    return models.Post.destroy({ where: { id: id, userId: userId } });
+    await post.destroy();
+
+    return;
+
 }
 
 module.exports = {

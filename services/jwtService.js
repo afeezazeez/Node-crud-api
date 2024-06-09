@@ -41,7 +41,6 @@ function addTokenToBlacklist(token, expiryTime) {
 
 
 function isTokenBlacklisted(token, callback) {
-    console.log("Is it blacklisted? = FF");
     redisClient.get(token, (err, result) => {
         if (err) {
             console.error('Error checking blacklist:', err);

@@ -17,7 +17,7 @@ async function store(req, res, next) {
         if (!isValid) {
             throw new ValidationErrorException(errors);
         }
-        const result = await postService.createPost(req.body);
+        const result = await postService.createPost({ ...req.body, userId: req.userData.userId });
 
         return sendSuccessResponse(res, result, "Post created", 201);
 
@@ -48,11 +48,10 @@ async function index(req, res, next) {
 }
 
 async function update(req, res, next) {
-    const id = req.params.id;
-    const userId = 1
-    try {
+    
+try {
 
-        const schema = {
+      const schema = {
             title: { type: "string", optional: false },
             content: { type: "string", optional: false },
             imageUrl: { type: "string", optional: false },
@@ -65,7 +64,7 @@ async function update(req, res, next) {
             throw new ValidationErrorException(errors);
         }
 
-        const result = await postService.updatePost(id, userId, req.body);
+        const result = await postService.updatePost(req.params.id, req.body);
 
         return sendSuccessResponse(res, result, "Post updated");
         
@@ -75,10 +74,8 @@ async function update(req, res, next) {
 }
 
 async function destroy(req, res, next) {
-    const id = req.params.id;
-    const userId = 1; 
     try {
-        await postService.deletePost(id, userId);
+        await postService.deletePost(req.params.id);
         return sendSuccessResponse(res, null, "Post deleted");
     } catch (error) {
         return next(error);

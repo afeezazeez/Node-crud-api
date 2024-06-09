@@ -49,6 +49,8 @@ async function logoutUser(token) {
     const expiryTime = decodedToken.exp - Math.floor(Date.now() / 1000);
 
     addTokenToBlacklist(token, expiryTime);
+
+    return;
 }
 
 module.exports = {

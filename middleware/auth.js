@@ -9,7 +9,6 @@ function authenticate(req, res, next) {
             if (err || blacklisted) {
                 return next(new AuthenticationException());
             }
-            
             const decodedToken = verifyToken(token);
             req.userData = decodedToken;
             next();
