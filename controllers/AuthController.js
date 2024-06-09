@@ -54,8 +54,22 @@ async function login(req, res, next) {
         
         const token = await authService.loginUser(req.body);
         
-        return sendSuccessResponse(res, token, "Login successful", 200);
+        return sendSuccessResponse(res, token, "Login successful");
 
+    } catch (error) {
+
+        return next(error);
+    }
+}
+
+async function logout(req, res, next) {
+
+    try {
+
+        const token = req.headers.authorization.split(" ")[1];
+        await authService.logoutUser(token);
+        return sendSuccessResponse(res, null, "Logout successful", 200);
+    
     } catch (error) {
 
         return next(error);
@@ -64,5 +78,6 @@ async function login(req, res, next) {
 
 module.exports = {
     register,
-    login
+    login,
+    logout
 };

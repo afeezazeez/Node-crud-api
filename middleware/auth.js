@@ -1,18 +1,24 @@
-const jwt = require('jsonwebtoken');
-const {verifyToken} = require('../services/jwtService')
-const AuthenticationException =  require('../exceptions/AuthenticationException')
+const { verifyToken, isTokenBlacklisted } = require('../services/jwtService');
+const AuthenticationException = require('../exceptions/AuthenticationException');
 
-function authenticate(req,res,next){
+function authenticate(req, res, next) {
     try {
         const token = req.headers.authorization.split(" ")[1];
-        const decodedToken = verifyToken(token)
-        req.userData = decodedToken
-        next();
+        
+        isTokenBlacklisted(token, (err, blacklisted) => {
+            if (err || blacklisted) {
+                return next(new AuthenticationException());
+            }
+            
+            const decodedToken = verifyToken(token);
+            req.userData = decodedToken;
+            next();
+        });
     } catch (error) {
-        next(new AuthenticationException())
-    }
+        next(new AuthenticationException());
+    }    
 }
 
 module.exports = {
     authenticate
-}
+};

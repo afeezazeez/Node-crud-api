@@ -1,7 +1,8 @@
 const models = require('../models');
 const ClientErrorException  = require('../exceptions/ClientErrorException')
+const AuthenticationException  = require('../exceptions/AuthenticationException')
 const { hashPassword, check } = require('../utils/bcrypt');
-const { generateToken } = require('./jwtService');
+const { generateToken,verifyToken,addTokenToBlacklist } = require('./jwtService');
 
 async function registerUser(userData) {
    
@@ -37,7 +38,21 @@ async function loginUser(credentials) {
     return { token };
 }
 
+async function logoutUser(token) {
+    
+    const decodedToken = verifyToken(token);
+
+    if(!decodedToken){
+        throw new AuthenticationException()
+    }
+
+    const expiryTime = decodedToken.exp - Math.floor(Date.now() / 1000);
+
+    addTokenToBlacklist(token, expiryTime);
+}
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    logoutUser
 };
