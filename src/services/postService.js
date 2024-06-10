@@ -16,7 +16,7 @@ async function getPostById(id) {
 }
 
 async function getAllPosts(query, pageSize, page) {
-   
+    
     const offset = (page - 1) * pageSize;
 
     const whereClause = query
@@ -30,27 +30,23 @@ async function getAllPosts(query, pageSize, page) {
 
     const { count, rows } = await models.Post.findAndCountAll({
         where: whereClause,
-        order: [
-            ['createdAt', 'DESC']
-        ],
+        order: [['createdAt', 'DESC']],
         limit: pageSize,
         offset: offset
     });
 
     const totalPages = Math.ceil(count / pageSize);
+    const nextPage = page < totalPages ? page + 1 : null;
 
     return {
-        meta: {
-            totalItems: count,
-            totalPages: totalPages,
-            currentPage: page,
-            pageSize: pageSize
-        },
-        data: rows
+        data: rows,
+        total: count,
+        total_pages: totalPages,
+        current_page: page,
+        page_size: pageSize,
+        next_page: nextPage
     };
 }
-
-
 
 async function updatePost(id, updatedData) {
   
