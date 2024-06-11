@@ -1,6 +1,7 @@
 const models = require('../models');
 const ClientErrorException = require('../exceptions/ClientErrorException');
 const { Op } = require('sequelize');
+const {getPaginationData} = require('../utils/helper')
 
 async function createPost(postData) {
     return models.Post.create(postData);
@@ -35,18 +36,14 @@ async function getAllPosts(query, pageSize, page) {
         offset: offset
     });
 
-    const totalPages = Math.ceil(count / pageSize);
-    const nextPage = page < totalPages ? page + 1 : null;
+    const paginationData = getPaginationData(count, pageSize, page);
 
     return {
         data: rows,
-        total: count,
-        total_pages: totalPages,
-        current_page: page,
-        page_size: pageSize,
-        next_page: nextPage
+        ...paginationData
     };
 }
+
 
 async function updatePost(id, updatedData) {
   
