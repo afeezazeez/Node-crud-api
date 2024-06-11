@@ -6,7 +6,7 @@ const logger = require('../utils/logger');
 const secret = process.env.JWT_SECRET || 'default_secret_key';
 
 function generateToken(payload) {
-    return jwt.sign(payload, secret, { expiresIn: '1m' });
+    return jwt.sign(payload, secret, { expiresIn: '1hr' });
 }
 
 function verifyToken(token) {
