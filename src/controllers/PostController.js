@@ -40,7 +40,7 @@ async function show(req, res, next) {
     try {
         const result = await postService.getPostById(id);
         
-        return sendSuccessResponse(res, result);
+        return sendSuccessResponse(res, PostTransformer.make(result));
     } catch (error) {
         return next(error);
     }
