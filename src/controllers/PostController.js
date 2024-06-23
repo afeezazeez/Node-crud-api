@@ -80,7 +80,7 @@ try {
 
         const result = await postService.updatePost(req.params.id, req.body);
 
-        return sendSuccessResponse(res, result, "Post updated");
+        return sendSuccessResponse(res, PostTransformer.make(result), "Post updated");
         
     } catch (error) {
         return next(error);
