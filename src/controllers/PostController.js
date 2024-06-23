@@ -1,15 +1,16 @@
 const postService = require('../services/postService');
+const fileService = require('../services/fileService');
 const { sendSuccessResponse } = require('../utils/responseHelper');
 const { validate } = require('../utils/validationHelper');
 const ValidationErrorException  = require('../exceptions/ValidationException')
+const ClientErrorException  = require('../exceptions/ClientErrorException')
+const PostTransformer = require('../transformers/postTransformer')
 
 async function store(req, res, next) {
     try {
         const schema = {
             title: { type: "string", optional: false },
             content: { type: "string", optional: false },
-            imageUrl: { type: "string", optional: false },
-            categoryId:{ type: "number", optional: false },
         };
     
         const { isValid, errors } = validate(req.body, schema);
@@ -17,9 +18,16 @@ async function store(req, res, next) {
         if (!isValid) {
             throw new ValidationErrorException(errors);
         }
-        const result = await postService.createPost({ ...req.body, userId: req.userData.userId });
+        
+        if (!req.file) {
+            throw new ClientErrorException('The file field is required');
+        }
 
-        return sendSuccessResponse(res, result, "Post created", 201);
+        const imageUpload = await fileService.uploadFile(req.file.buffer, 'avatars');
+
+        const result = await postService.createPost({ ...req.body, userId: req.userData.userId,image: imageUpload.url});
+
+        return sendSuccessResponse(res, PostTransformer.make(result), "Post created", 201);
 
     } catch (error) {
 
@@ -41,13 +49,17 @@ async function show(req, res, next) {
 async function index(req, res, next) {
     try {
         const query = req.query.q;
-        const pageSize = parseInt(process.env.PAGE_SIZE) || 5;
+        const pageSize = parseInt(process.env.PAGE_SIZE) || 2;
         const page = parseInt(req.query.page) || 1;
 
         const result = await postService.getAllPosts(query, pageSize, page);
-        return sendSuccessResponse(res, result);
+    
+        return sendSuccessResponse(res, {...result,data: PostTransformer.collection(result.data)});
+    
     } catch (error) {
+    
         return next(error);
+    
     }
 }
 
@@ -58,8 +70,6 @@ try {
       const schema = {
             title: { type: "string", optional: false },
             content: { type: "string", optional: false },
-            imageUrl: { type: "string", optional: false },
-            categoryId:{ type: "number", optional: false },
         };
     
         const { isValid, errors } = validate(req.body, schema);

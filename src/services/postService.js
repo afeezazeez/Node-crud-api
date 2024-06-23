@@ -30,7 +30,7 @@ async function getAllPosts(query, pageSize, page) {
 
     const { count, rows } = await models.Post.findAndCountAll({
         where: whereClause,
-        order: [['createdAt', 'DESC']],
+        order: [['created_at', 'DESC']],
         limit: pageSize,
         offset: (page - 1) * pageSize
     });

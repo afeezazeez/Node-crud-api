@@ -25,12 +25,21 @@ To run this application locally, follow these steps:
   - Logs in an existing user.
   - Requires a JSON object containing `email` and `password` in the request body.
 
+
+### Users
+
+- **Upload Avatar**: `POST /user/avatar-upload`
+  - Upload user avatar
+  - Requires authentication (JWT token) in the request header.
+  - Requires a JSON object containing `file` in the request body.
+
+
 ### Posts
 
 - **Create Post**: `POST /posts`
   - Creates a new post.
   - Requires authentication (JWT token) in the request header.
-  - Requires a JSON object containing `title`, `content`, `imageUrl`, and `categoryId` in the request body.
+  - Requires a JSON object containing `title`, `content`, and `file` in the request body.
 
 - **Get All Posts**: `GET /posts`
   - Retrieves all posts.
@@ -43,7 +52,7 @@ To run this application locally, follow these steps:
 - **Update Post**: `PATCH /posts/:id`
   - Updates an existing post by ID.
   - Requires authentication (JWT token) in the request header.
-  - Requires a JSON object containing `title`, `content`, `imageUrl`, and `categoryId` in the request body.
+  - Requires a JSON object containing `title`, `content` in the request body.
 
 - **Delete Post**: `DELETE /posts/:id`
   - Deletes a post by ID.

@@ -1,4 +1,5 @@
 const fileService = require('../services/fileService');
+const userService = require('../services/userService');
 const { sendSuccessResponse } = require('../utils/responseHelper');
 const logger = require('../utils/logger');
 const ClientErrorException = require('../exceptions/ClientErrorException');
@@ -11,7 +12,8 @@ const uploadAvatar = async (req, res, next) => {
       }
 
       const result = await fileService.uploadFile(req.file.buffer, 'avatars');
-
+      
+      await userService.updateUser(req.userData.userId,{avatar:result.url,avatar_id:result.public_id})
 
       return sendSuccessResponse(res, result, 'Avatar uploaded successfully');
     

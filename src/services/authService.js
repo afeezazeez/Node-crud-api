@@ -12,15 +12,12 @@ async function registerUser(userData) {
         throw new ClientErrorException("Email is already associated with a user", 409);
     }
 
-    // Resource/DTO and also multer size validation finish and last multiple upload
-
+  
     userData.password = hashPassword(userData.password);
 
     const newUser = await models.User.create(userData);
-    
-    const { password, ...userWithoutPassword } = newUser.dataValues;
-
-    return userWithoutPassword;
+ 
+    return newUser;
 }
 
 async function loginUser(credentials) {

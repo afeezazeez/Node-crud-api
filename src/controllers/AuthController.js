@@ -2,6 +2,7 @@ const authService = require('../services/authService');
 const { sendSuccessResponse } = require('../utils/responseHelper');
 const { validate } = require('../utils/validationHelper');
 const ValidationErrorException  = require('../exceptions/ValidationException')
+const UserTransformer = require('../transformers/userTransformer')
 
 async function register(req, res, next) {
     try {
@@ -29,7 +30,7 @@ async function register(req, res, next) {
 
         const user = await authService.registerUser(req.body);
 
-        return sendSuccessResponse(res, user, "Registration successful", 201);
+        return sendSuccessResponse(res, UserTransformer.make(user), "Registration successful", 201);
 
     } catch (error) {
 

@@ -18,11 +18,19 @@ module.exports = {
       password: {
         type: Sequelize.STRING
       },
-      createdAt: {
+      avatar:{
+        type: Sequelize.STRING,
+        allowNull:true,
+      },
+      avatar_id:{
+        type: Sequelize.STRING,
+        allowNull:true,
+      },
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }

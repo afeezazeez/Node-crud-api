@@ -15,21 +15,18 @@ module.exports = {
       content: {
         type: Sequelize.TEXT
       },
-      imageUrl: {
+      image: {
         type: Sequelize.STRING,
         allowNull:true
       },
-      categoryId: {
+      user_id: {
         type: Sequelize.INTEGER
       },
-      userId: {
-        type: Sequelize.INTEGER
-      },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
