@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const redisClient = require('../config/redisClient');
-const AuthenticationException = require('../exceptions/AuthenticationException')
-const logger = require('../utils/logger');
+const redisClient = require('../config/redis');
 const secret = process.env.JWT_SECRET || 'default_secret_key';
 
 function generateToken(payload) {

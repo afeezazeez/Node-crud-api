@@ -4,31 +4,30 @@ const logger = require('../utils/logger');
 const path = require('path');
 const fs = require('fs');
 
-const uploadFile = async (filePath, folder) => {
-  try {
-    const result = await cloudinary.uploader.upload(filePath, {
-      folder: folder
-    });
-    clearUploadsDirectory();
-    return result.secure_url;
-  } catch (error) {
-      logger.error(`[FileService] : Failed to upload file with error  ${error.message}`)
-      throw new ClientErrorException(`Failed to upload file`);
-  }
-};
+const uploadFile = (buffer, folder) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: 'auto',
+        folder: folder,
+      },
+      (error, result) => {
+        if (error) {
+          logger.error(`[FileService] : Failed to upload file with error ${error.message}`, { stack: error.stack });
+          return reject(new ClientErrorException('Failed to upload file'));
+        }
+        const response = {
+          url: result.secure_url,
+          public_id: result.public_id,
+        };
+        resolve(response);
+      }
+    );
 
-const clearUploadsDirectory = () => {
-  const directory = path.join(__dirname, '../uploads'); 
-  console.log(directory)
-  fs.readdir(directory, (err, files) => {
-    if (err) throw err;
-    for (const file of files) {
-      fs.unlink(path.join(directory, file), err => {
-        if (err) throw err;
-      });
-    }
+    uploadStream.end(buffer);
   });
 };
+
 
 
 module.exports = {

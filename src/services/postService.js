@@ -3,6 +3,7 @@ const ClientErrorException = require('../exceptions/ClientErrorException');
 const { Op } = require('sequelize');
 const {getPaginationData} = require('../utils/helper')
 
+
 async function createPost(postData) {
     return models.Post.create(postData);
 }
@@ -18,8 +19,6 @@ async function getPostById(id) {
 
 async function getAllPosts(query, pageSize, page) {
     
-    const offset = (page - 1) * pageSize;
-
     const whereClause = query
         ? {
               [Op.or]: [
@@ -33,7 +32,7 @@ async function getAllPosts(query, pageSize, page) {
         where: whereClause,
         order: [['createdAt', 'DESC']],
         limit: pageSize,
-        offset: offset
+        offset: (page - 1) * pageSize
     });
 
     const paginationData = getPaginationData(count, pageSize, page);
