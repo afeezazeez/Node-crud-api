@@ -25,7 +25,7 @@ async function store(req, res, next) {
 
         const imageUpload = await fileService.uploadFile(req.file.buffer, 'avatars');
 
-        const result = await postService.createPost({ ...req.body, userId: req.userData.userId,image: imageUpload.url});
+        const result = await postService.createPost({ ...req.body, user_id: req.userData.userId,image: imageUpload.url});
 
         return sendSuccessResponse(res, PostTransformer.make(result), "Post created", 201);
 
@@ -39,7 +39,6 @@ async function show(req, res, next) {
     const id = req.params.id;
     try {
         const result = await postService.getPostById(id);
-        
         return sendSuccessResponse(res, PostTransformer.make(result));
     } catch (error) {
         return next(error);
