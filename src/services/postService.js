@@ -5,6 +5,8 @@ const {getPaginationData} = require('../utils/helper')
 
 
 async function createPost(postData) {
+    console.log("ELII")
+    console.log(postData)
     return models.Post.create(postData);
 }
 
@@ -15,6 +17,15 @@ async function getPostById(id) {
         throw new ClientErrorException("Post not found", 404);
     }
     return post;
+}
+
+async function getPostCategoryById(id) {
+    const category = await models.Category.findOne({ where: { id: id} });
+    
+    if (!category) {
+        throw new ClientErrorException("Category not found", 404);
+    }
+    return category;
 }
 
 async function getAllPosts(query, pageSize, page) {
@@ -73,5 +84,6 @@ module.exports = {
     getPostById,
     getAllPosts,
     updatePost,
-    deletePost
+    deletePost,
+    getPostCategoryById
 };

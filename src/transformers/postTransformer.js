@@ -10,8 +10,7 @@ function make(post) {
       title: post.title,
       content: post.content,
       image_url:post.image,
-      created_at:post.created_at
-     
+      created_at:post.created_at, 
     };
   }
   

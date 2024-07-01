@@ -3,13 +3,14 @@ const ClientErrorException = require('../exceptions/ClientErrorException');
 const logger = require('../utils/logger');
 const path = require('path');
 const fs = require('fs');
+const environment = process.env.NODE_ENV
 
 const uploadFile = (buffer, folder) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         resource_type: 'auto',
-        folder: folder,
+        folder: `${environment}/${folder}`,
       },
       (error, result) => {
         if (error) {
