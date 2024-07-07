@@ -13,7 +13,7 @@ async function index(req, res, next) {
         const page = parseInt(req.query.page) || 1;
 
         const result = await postService.getAllPosts(query, pageSize, page);
-    
+       
         return sendSuccessResponse(res, {...result,data: PostTransformer.collection(result.data)});
     
     } catch (error) {

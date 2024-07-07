@@ -5,14 +5,17 @@ const {getPaginationData} = require('../utils/helper')
 
 
 async function createPost(postData) {
-    console.log("ELII")
-    console.log(postData)
+
     return models.Post.create(postData);
 }
 
 async function getPostById(id) {
-    const post = await models.Post.findOne({ where: { id: id} });
-    
+
+    const post =  await models.Post.findOne({
+        where: { id: id },
+        include: [models.User,models.Category]
+      });
+        
     if (!post) {
         throw new ClientErrorException("Post not found", 404);
     }
@@ -43,7 +46,8 @@ async function getAllPosts(query, pageSize, page) {
         where: whereClause,
         order: [['created_at', 'DESC']],
         limit: pageSize,
-        offset: (page - 1) * pageSize
+        offset: (page - 1) * pageSize,
+        include: [models.User,models.Category]
     });
 
     const paginationData = getPaginationData(count, pageSize, page);

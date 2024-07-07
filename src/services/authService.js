@@ -22,9 +22,12 @@ async function registerUser(userData) {
 
 async function loginUser(credentials) {
  
-    const user = await models.User.findOne({ where: { email: credentials.email } });
-
-    if (!user) {
+   const user =  await models.User.findOne({
+        where: { email: credentials.email },
+        //include: [models.Address,models.Post]
+      });
+    
+      if (!user) {
         throw new ClientErrorException("Email is not associated with any user", 401);
     }
 

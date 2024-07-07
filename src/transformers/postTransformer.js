@@ -1,4 +1,6 @@
-// PostTransformer.js
+const userTransformer = require('./userTransformer');
+const categoryTransformer = require('./categoryTransformer');
+
 
 function make(post) {
     if (!post) {
@@ -10,7 +12,9 @@ function make(post) {
       title: post.title,
       content: post.content,
       image_url:post.image,
-      created_at:post.created_at, 
+      created_at:post.created_at,
+      user:userTransformer.make(post.User),
+      categories:categoryTransformer.collection(post.Categories) 
     };
   }
   
