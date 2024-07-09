@@ -1,7 +1,7 @@
 'use strict';
 
 const { User } = require('../models');
-const {generateRandomAddress} = require('../utils/helper')
+const { faker } = require('@faker-js/faker');
 
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -42,13 +42,20 @@ async function getUsers() {
 }
 
 function generateDummyAddresses(users) {
-  const addresses = users.map(user => ({
-    name: generateRandomAddress(), // Generate realistic addresses
-    user_id: user.id,
-    created_at: new Date(),
-    updated_at: new Date()
-  }));
+    
+  const addresses = users.map(user => {
+    const streetNumber = faker.location.buildingNumber();
+    const street = faker.location.street();
+    const city = faker.location.city();
+    const state = faker.location.state();
+    const zipCode = faker.location.zipCode();
+    
+    return {
+      name: `${streetNumber} ${street}, ${city}, ${state} ${zipCode}`,
+      user_id: user.id,
+      created_at: new Date(),
+      updated_at: new Date()
+    };
+  });
   return addresses;
 }
-
-

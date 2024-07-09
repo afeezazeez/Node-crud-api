@@ -15,6 +15,7 @@ module.exports = {
           model: 'posts',
           key: 'id'
         },
+        onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
         primaryKey: true
       },
@@ -24,12 +25,13 @@ module.exports = {
           model: 'categories',
           key: 'id'
         },
+        onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
         primaryKey: true
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('PostCategories');
+    await queryInterface.dropTable('post_categories');
   }
 };
