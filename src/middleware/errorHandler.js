@@ -19,9 +19,7 @@ function errorHandler(err, req, res, next) {
     return sendErrorResponse(res, null, err.message, err.statusCode);
   }
 
-
-  logger.error(err.stack);
-  console.log(err);
+  logger.error(err);
 
   return sendErrorResponse(res, null, 'Internal Server Error', 500);
 }

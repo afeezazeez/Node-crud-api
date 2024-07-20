@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { createLogger, format, transports } = require('winston');
+const { createLogger, format, transports, addColors } = require('winston');
 const { combine, timestamp, printf, colorize, errors } = format;
 const DailyRotateFile = require('winston-daily-rotate-file');
 const fs = require('fs');
@@ -16,57 +16,46 @@ function ensureDirectoryExistence(dirPath) {
   }
 }
 
-// Custom format to include the line number
-const addLineNumber = format((info) => {
-  if (info.stack) {
-    const stack = info.stack.split('\n');
-    
-    let relevantStackLine;
-    for (let i = 2; i < stack.length; i++) {
-      const line = stack[i].trim();
-      if (!line.includes('node:internal') && !line.includes('node:events')) {
-        relevantStackLine = line;
-        break;
-      }
-    }
-    
-    if (relevantStackLine) {
-      const matches = relevantStackLine.match(/at\s+(.*)\s+\((.*):(\d+):(\d+)\)/) || relevantStackLine.match(/at\s+(.*):(\d+):(\d+)/);
-      if (matches) {
-        info.filename = matches[2] || matches[1];
-        info.lineNumber = matches[3];
-      } else {
-        info.filename = 'unknown';
-        info.lineNumber = 'unknown';
-      }
-    }
-  }
-  return info;
-});
+// Define colors for different log levels
+const customColors = {
+  error: 'red',
+  warn: 'yellow',
+  info: 'green',
+  debug: 'blue'
+};
+
+addColors(customColors);
 
 // Define log formats
 const consoleFormat = combine(
-  errors({ stack: true }),
-  colorize(),
+  colorize(), // Apply colorization to all messages
   timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-  addLineNumber(),
-  printf(({ level, message, timestamp, filename, lineNumber, stack }) => {
-    return `${timestamp} ${level}: ${message} in [${filename} on line ${lineNumber}]${stack ? `\n${stack}` : ''}`;
+  printf(({ level, message, timestamp, stack }) => {
+    return stack
+      ? `${timestamp} ${level}: ${message}\n${stack}`
+      : `${timestamp} ${level}: ${message}`;
   })
 );
 
 const fileFormat = combine(
-  errors({ stack: true }),
   timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-  addLineNumber(),
-  printf(({ level, message, timestamp, filename, lineNumber, stack }) => {
-    return `${timestamp} ${level}: ${message} in [${filename} on line ${lineNumber}]${stack ? `\n${stack}` : ''}`;
+  printf(({ level, message, timestamp, stack }) => {
+    return stack
+      ? `${timestamp} ${level}: ${message}\n${stack}`
+      : `${timestamp} ${level}: ${message}`;
   })
 );
 
 // Create the logger
 const logger = createLogger({
   level: 'info',
+  levels: {
+    error: 0,
+    warn: 1,
+    info: 2,
+    debug: 3
+  },
+  format: fileFormat, // Default format for all transports
   transports: [
     new transports.Console({
       format: consoleFormat
@@ -76,8 +65,7 @@ const logger = createLogger({
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
       maxSize: '20m',
-      maxFiles: '14d',
-      format: fileFormat
+      maxFiles: '14d'
     })
   ]
 });
